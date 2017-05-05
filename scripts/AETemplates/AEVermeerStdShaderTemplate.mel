@@ -1,0 +1,38 @@
+// Copyright 2017 Jamie Clarkson
+
+//-
+// ==========================================================================
+//
+// ==========================================================================
+//+
+
+global proc AEVermeerStdShaderTemplate( string $nodeName )
+{
+	AEswatchDisplay $nodeName;
+	editorTemplate -beginScrollLayout;
+
+	editorTemplate -beginLayout "Common Material Attributes" -collapse 0;
+		editorTemplate -addControl "diffuseColor";
+		editorTemplate -addControl "diffuseStrength";
+		editorTemplate -addControl "diffuseRoughness";
+		editorTemplate -label "Spec1 Colour" -addControl "spec1Color";
+		editorTemplate -label "Spec1 Strength" -addControl "spec1Strength";
+		editorTemplate -label "Spec1 Roughness" -addControl "spec1Roughness";
+		editorTemplate -label "Spec1 Fresnel Model" -addControl "spec1FresnelModel";
+		editorTemplate -label "Spec1 Fresnel Edge (Metal)" -addControl "spec1FresnelEdge";
+		editorTemplate -label "Spec1 Fresnel Refl (Metal)" -addControl "spec1FresnelRefl";
+		editorTemplate -addControl "transmissive";
+		editorTemplate -addControl "transColor";
+		editorTemplate -addControl "transStrength";
+		editorTemplate -addControl "indexOfRefraction";
+		editorTemplate -addControl "priority";
+	editorTemplate -endLayout;
+
+	// include/call base class/node attributes
+	AEdependNodeTemplate $nodeName;
+	
+	editorTemplate -addExtraControls;
+	editorTemplate -endScrollLayout;
+}
+
+

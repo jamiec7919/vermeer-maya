@@ -1,0 +1,87 @@
+// This mel script should be saved as
+// "MayaFileExportScript.mel" and placed inside your scripts
+// directory. This is usually "my documents/maya/scripts" or
+// "~/maya/scripts" on linux. This procedure will be called
+//
+//
+// $parent - the parent UI layout
+// $action - "post" or "query"
+// $settings - the initial exporter settings
+// $callback - the function to call
+//
+global proc int VNFFileExportScript( 	string $parent,
+string $action,
+string $settings,
+string $callback ) {
+
+
+  	// if we need to create the user interface...
+  if ($action == "post") {
+  	// attachs the GUI to the correct parent layout
+    setParent $parent;
+
+    // create a simple layout for the controls
+    columnLayout -adj true;
+
+    // create 2 radio button groups for our options
+    radioButtonGrp
+    	-bgc 0.7 0.8 0.9
+      -l "Option1"
+      -nrb 2 -cw3 175 75 75
+      -la2 "On" "Off" -sl 1 option1;
+
+    radioButtonGrp
+    	-bgc 0.7 0.8 0.9
+      -l "Option2"
+      -nrb 2 -cw3 175 75 75
+      -la2 "On" "Off" -sl 1 option2;
+
+    // split the previous set of options
+    string $options[];
+    int $ntokens=`tokenize $settings " " $options`;
+
+    // loop through each option
+    for( $i=0; $i<$ntokens; ++$i ) {
+    	// get this option
+      $option = $options[$i];
+
+      if($option=="-option1") {
+      	// if set to off, update the GUI
+        if( $options[++$i] == "0" ) {
+          radioButtonGrp -e -sl 2 option1;
+        }
+
+      }
+      else
+      if($option=="-option2") {
+      	// if set to off, update the GUI
+        if( $options[++$i] == "0" ) {
+          radioButtonGrp -e -sl 2 option2;
+        }
+      }
+    }  
+  }
+  else
+  if ($action == "query") {
+    string $option="-option1 ";
+
+
+    if(`radioButtonGrp -q -sl option1` == 1)
+    	$option += "1 ";
+    else
+    	$option += "0 ";
+
+    $option+="-option2 ";
+
+
+    if(`radioButtonGrp -q -sl option2` == 1)
+      	$option += "1 ";
+    else
+      	$option += "0 ";
+
+    eval( $callback + "\"" + $option + "\"" ); 
+  }
+
+  return 1;
+
+}
