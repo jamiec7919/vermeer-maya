@@ -9,7 +9,7 @@
 #include <maya/MMatrix.h>
 #include <vector>
 
-void writeTransform(const MMatrix& trn, ostream& os) {
+inline void writeTransform(const MMatrix& trn, ostream& os) {
 	os << "1 matrix " << trn(0, 0) << " " << trn(1, 0) << " " << trn(2, 0) << " " << trn(3, 0) << "\n";
 	os << "\t\t" << trn(0, 1) << " " << trn(1, 1) << " " << trn(2, 1) << " " << trn(3, 1) << "\n";
 	os << "\t\t" << trn(0, 2) << " " << trn(1, 2) << " " << trn(2, 2) << " " << trn(3, 2) << "\n";
@@ -17,7 +17,7 @@ void writeTransform(const MMatrix& trn, ostream& os) {
 
 }
 
-void writeTransforms(const std::vector<MMatrix>& trn, ostream& os) {
+inline void writeTransforms(const std::vector<MMatrix>& trn, ostream& os) {
 	os << trn.size() << " matrix ";
 	
 	for (std::vector<MMatrix>::const_iterator iter = trn.begin(); iter != trn.end(); ++iter) {

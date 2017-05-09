@@ -85,6 +85,7 @@
     <ClCompile Include="VermeerStdShader.cpp" />
     <ClCompile Include="VNFExporter.cpp" />
     <ClCompile Include="VShaderStd.cpp" />
+    <ClCompile Include="VSphereLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="util.h" />
@@ -93,6 +94,7 @@
     <ClInclude Include="VermeerStdShader.h" />
     <ClInclude Include="VNFExporter.h" />
     <ClInclude Include="VShaderStd.h" />
+    <ClInclude Include="VSphereLight.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

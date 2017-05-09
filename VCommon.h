@@ -23,6 +23,8 @@ class VAiryFilter {
 public:
 	void write(ostream& os);
 
+	VAiryFilter() : Name("filter1"), Res(64), Width(4) {}
+
 	MString Name;
 	int Res;
 	int Width;

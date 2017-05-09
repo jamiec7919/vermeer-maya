@@ -25,17 +25,25 @@ void VShaderStd::write(ostream& os){
 		os << "\tDiffuseColour " << DiffuseColour << "\n";
 	}
 
-	os << "\tDiffuseRoughness " << DiffuseRoughness << "\n";
+	if (DiffuseRoughness != 0) {
+		os << "\tDiffuseRoughness " << DiffuseRoughness << "\n";
+	}
 
-	os << "\tDiffuseStrength " << DiffuseStrength << "\n";
+	if (DiffuseStrength != 0) {
+		os << "\tDiffuseStrength " << DiffuseStrength << "\n";
+	}
 
 	if (Spec1Colour != 0) {
 		os << "\tSpec1Colour " << Spec1Colour << "\n";
 	}
 
-	os << "\tSpec1Strength " << Spec1Strength << "\n";
+	if (Spec1Strength != 0) {
+		os << "\tSpec1Strength " << Spec1Strength << "\n";
+	}
 
-	os << "\tSpec1Roughness " << Spec1Roughness << "\n";
+	if (Spec1Roughness != 0) {
+		os << "\tSpec1Roughness " << Spec1Roughness << "\n";
+	}
 
 	if (EmissionColour != 0) {
 		os << "\tEmissionColour " << EmissionColour << "\n";

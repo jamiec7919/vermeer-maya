@@ -469,7 +469,7 @@ Uniform* getValue(MFnDependencyNode& nodeFn, const MString& baseShortname) {
 
 }
 
-VShaderStd* VermeerStdShader::createShaderStd(MObject obj) {
+VShaderStd* VermeerStdShader::createShaderStd(MObject& obj) {
 	MPlug plug;
 
 	MFnDependencyNode nodeFn(obj);
@@ -484,4 +484,22 @@ VShaderStd* VermeerStdShader::createShaderStd(MObject obj) {
 	shader->Spec1Roughness = getValue(nodeFn, MString("s1r"));
 	shader->Spec1Strength = getValue(nodeFn, MString("s1s"));
 
+	shader->TransColour = getRGB(nodeFn, MString("tc"));
+	shader->TransStrength = getValue(nodeFn, MString("ts"));
+
+	plug = nodeFn.findPlug("ior");
+
+	plug.getValue(shader->IOR);
+
+	plug = nodeFn.findPlug("priority");
+
+	plug.getValue(shader->Priority);
+
+	plug = nodeFn.findPlug("transmissive");
+
+	plug.getValue(shader->Transmissive);
+
+	shader->Name = nodeFn.name();
+
+	return shader;
 }

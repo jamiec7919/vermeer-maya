@@ -52,8 +52,17 @@ VCamera* createCamera(MObject& obj) {
 
 	MDagPath::getAPathTo(obj, path);
 
+	//MTransformationMatrix trn(path.inclusiveMatrixInverse());
+	//double scale[3] = { 1, -1, 1 };
+	//trn.setScale(scale,MSpace::kPreTransform);
+
 	cam->Name = path.partialPathName();
 	cam->Matrix = path.inclusiveMatrixInverse();
+	// This is a hack, need to confirm the correct handedness and if images are flipped in vermeer
+	cam->Matrix(0, 1) = -cam->Matrix(0, 1);
+	cam->Matrix(1, 1) = -cam->Matrix(1, 1);
+	cam->Matrix(2, 1) = -cam->Matrix(2, 1);
+	cam->Matrix(3, 1) = -cam->Matrix(3, 1);
 	cam->Radius = 0;
 	cam->FOV = fn.horizontalFieldOfView() * (180 / M_PI);
 	cam->Aspect = fn.aspectRatio();
