@@ -482,6 +482,11 @@ void VNFExporter::exportMesh(ostream& ofile, MObject& obj){
 
 	MMatrix matrix = fnTrn.transformationMatrix();
 
+	MDagPath pathToMesh;
+	MDagPath::getAPathTo(obj, pathToMesh);
+
+matrix = pathToMesh.inclusiveMatrix();
+
 	ofile << "\tTransform ";
 	writeTransform(matrix,ofile);
 
