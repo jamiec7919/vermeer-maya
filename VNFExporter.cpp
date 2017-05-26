@@ -409,10 +409,23 @@ void VNFExporter::exportMesh(ostream& ofile, MObject& obj){
 		// to all the polygons we are going to extract below.
 		MObject srcnode = srcplugarray[0].node();
 		MFnDependencyNode nodeSrcFn(srcnode);
-		shaders.push_back(nodeSrcFn.name());
 
 		if (!hasShader(nodeSrcFn.name())) {
-			createShader(srcnode);
+			if (!createShader(srcnode)) {
+				MString shaderName = "missing";
+				shaderName += nMissingShaders;
+				nMissingShaders++;
+				shaders.push_back(shaderName);
+				this->shaders.push_back(VermeerStdShader::createShaderDefault(shaderName));
+
+			}
+			else {
+				shaders.push_back(nodeSrcFn.name());
+			}
+		}
+		else {
+			shaders.push_back(nodeSrcFn.name());
+
 		}
 
 		// we might want to stop processing this node right now if
@@ -430,6 +443,15 @@ void VNFExporter::exportMesh(ostream& ofile, MObject& obj){
 		// jump to our own code to export a polygon with a material
 		//writepolygon( vertexidxs, matidx );
 		//}
+	}
+
+	if (shaders.size() < 1) {
+		MString shaderName = "missing";
+		shaderName += nMissingShaders;
+		nMissingShaders++;
+		shaders.push_back(shaderName);
+		this->shaders.push_back(VermeerStdShader::createShaderDefault(shaderName));
+
 	}
 
 	ofile << "\tShader " << shaders.size() << " string";
@@ -485,10 +507,24 @@ void VNFExporter::exportMesh(ostream& ofile, MObject& obj){
 	MDagPath pathToMesh;
 	MDagPath::getAPathTo(obj, pathToMesh);
 
-matrix = pathToMesh.inclusiveMatrix();
+	matrix = pathToMesh.inclusiveMatrix();
 
 	ofile << "\tTransform ";
 	writeTransform(matrix,ofile);
+
+	float rayBias = 0;
+
+	MStatus status;
+	MPlug plug = fn.findPlug("rayBias", &status);
+
+	if (MStatus::kSuccess == status)
+	{
+		plug.getValue(rayBias);
+	}
+
+	if(rayBias != 0.0) {
+		ofile << "\tRayBias " << rayBias << "\n";
+	}
 
 	ofile << "}\n\n";
 
@@ -602,7 +638,7 @@ void VNFExporter::exportPointLight(ostream& ofile, MObject& obj){
 	shaders.push_back(shader);
 }
 
-void VNFExporter::createShader(MObject& obj){
+bool VNFExporter::createShader(MObject& obj){
 	MFnDependencyNode nodeFn(obj);
 	VShaderStd* shader = 0;
 
@@ -610,10 +646,29 @@ void VNFExporter::createShader(MObject& obj){
 	{
 		shader = VermeerStdShader::createShaderStd(obj);
 	}
+	else if (obj.apiType() == MFn::kLambert)
+	{
+		shader = VermeerStdShader::createShaderLambert(obj);
+	}
+	else if (obj.apiType() == MFn::kPhong)
+	{
+		shader = VermeerStdShader::createShaderPhong(obj);
+	}
+	else if (obj.apiType() == MFn::kPhongExplorer)
+	{
+		shader = VermeerStdShader::createShaderPhongE(obj);
+	}
+	else if (obj.apiType() == MFn::kBlinn)
+	{
+		shader = VermeerStdShader::createShaderBlinn(obj);
+	}
 
 	if (shader != 0) {
 		shaders.push_back(shader);
+		return true;
 	}
+
+	return false;
 }
 
 MStatus initPointLightExtensions(MObject& obj) {
@@ -630,6 +685,25 @@ MStatus initPointLightExtensions(MObject& obj) {
 	//MFnTypedAttribute fnAttr;
 	//MObject attr = fnAttr.create(L, S, MyMPx::id); // or: MObject attr = fnAttr.create(L, S, MyMPx::id, MObject::kNullObj, &status);
 	MNodeClass mnDagNodeClass("pointLight");
+	status = mnDagNodeClass.addExtensionAttribute(attr);
+
+	return status;
+}
+
+MStatus initMeshExtensions(MObject& obj) {
+	MStatus status;
+
+	MFnNumericAttribute nAttr;
+	MObject attr = nAttr.create("rayBias", "bias",
+		MFnNumericData::kFloat, 0, &status);
+	CHECK_MSTATUS(status);
+	CHECK_MSTATUS(nAttr.setKeyable(true));
+	CHECK_MSTATUS(nAttr.setStorable(true));
+	CHECK_MSTATUS(nAttr.setDefault(0.f));
+
+	//MFnTypedAttribute fnAttr;
+	//MObject attr = fnAttr.create(L, S, MyMPx::id); // or: MObject attr = fnAttr.create(L, S, MyMPx::id, MObject::kNullObj, &status);
+	MNodeClass mnDagNodeClass("mesh");
 	status = mnDagNodeClass.addExtensionAttribute(attr);
 
 	return status;

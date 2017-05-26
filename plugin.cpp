@@ -56,6 +56,8 @@ MStatus initializePlugin(MObject obj) {
 
 	CHECK_MSTATUS(initPointLightExtensions(obj));
 
+	CHECK_MSTATUS(initMeshExtensions(obj));
+
 	return MS::kSuccess;
 }
 

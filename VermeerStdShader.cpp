@@ -12,6 +12,12 @@
 #include <maya/MPlug.h>
 #include <maya/MPlugArray.h>
 
+#include <maya/MColor.h>
+#include <maya/MFnPhongShader.h>
+#include <maya/MFnPhongEShader.h>
+#include <maya/MFnLambertShader.h>
+#include <maya/MFnBlinnShader.h>
+
 MObject  VermeerStdShader::aDiffuseStrength;
 MObject  VermeerStdShader::aDiffuseColorR;
 MObject  VermeerStdShader::aDiffuseColorG;
@@ -414,7 +420,7 @@ BOOL hasTexture(MPlug& plug, MString& filename) {
 	return FALSE;
 }
 
-Uniform* getRGB(MFnDependencyNode& nodeFn, const MString& baseShortname) {
+Uniform* getRGB(MFnDependencyNode& nodeFn, const MString& baseShortname, bool* isBlack=0) {
 	MPlug plug;
 	RGBConst* rgbConst;
 
@@ -438,10 +444,23 @@ Uniform* getRGB(MFnDependencyNode& nodeFn, const MString& baseShortname) {
 
 	if (hasTexture(plug, filename)) {
 		delete rgbConst;
+
+		if (isBlack != 0)
+			*isBlack = false;
+
 		return new Texture(filename);
 
 	}
 	else {
+		if (isBlack != 0){
+			if (rgbConst->C[0] == 0.0f && rgbConst->C[1] == 0.0f && rgbConst->C[2] == 0.0f) {
+				*isBlack = true;
+			}
+			else {
+				*isBlack = false;
+			}
+		}
+
 		return rgbConst;
 	}
 
@@ -498,6 +517,190 @@ VShaderStd* VermeerStdShader::createShaderStd(MObject& obj) {
 	plug = nodeFn.findPlug("transmissive");
 
 	plug.getValue(shader->Transmissive);
+
+	shader->Name = nodeFn.name();
+
+	return shader;
+}
+
+VShaderStd* VermeerStdShader::createShaderDefault(const MString& name) {
+	VShaderStd* shader = new VShaderStd();
+
+
+	shader->DiffuseColour = new RGBConst(MColor(0.8f,0.8f,0.8f));
+	shader->DiffuseRoughness = new Float32Const(0);
+	shader->DiffuseStrength = new Float32Const(1);
+
+	shader->Spec1Strength = new Float32Const(0);
+
+	shader->Name = name;
+
+	return shader;
+
+}
+
+VShaderStd* VermeerStdShader::createShaderPhong(MObject& obj) {
+	MFnDependencyNode nodeFn(obj);
+
+	MFnPhongShader fn(obj);
+
+	// extract all the phong parameters:
+	//MColor glowColor = phong.incandescence();
+	//MColor diffuseColor = phong.color() * phong.diffuseCoeff();
+	//MColor specularColor = phong.specularColor();
+	//double cosinePower = phong.cosPower();
+	//MColor transColor = phong.transparency();
+
+	VShaderStd* shader = new VShaderStd();
+
+	shader->DiffuseColour = getRGB(fn, MString("c"));
+	shader->DiffuseRoughness = new Float32Const(0);
+	shader->DiffuseStrength = new Float32Const(0.5);
+
+	shader->Spec1Strength = new Float32Const(0.5);
+	shader->Spec1Roughness = new Float32Const(0.7);
+	shader->Spec1Colour = getRGB(fn, MString("s"));
+
+	bool isBlack = true;
+	shader->TransColour = getRGB(fn, MString("it"),&isBlack);
+
+	if (!isBlack) {
+		MPlug plug = fn.findPlug("rfi");
+
+		plug.getValue(shader->IOR);
+
+		shader->Transmissive = TRUE;
+		shader->TransStrength = new Float32Const(0.8);
+	}
+
+	shader->Name = nodeFn.name();
+
+	return shader;
+
+}
+
+VShaderStd* VermeerStdShader::createShaderPhongE(MObject& obj) {
+	MFnDependencyNode nodeFn(obj);
+
+	MFnPhongEShader fn(obj);
+
+	// extract all the phong parameters:
+	//MColor glowColor = phong.incandescence();
+	//MColor diffuseColor = phong.color() * phong.diffuseCoeff();
+	//MColor specularColor = phong.specularColor();
+	//double cosinePower = phong.cosPower();
+	//MColor transColor = phong.transparency();
+
+	VShaderStd* shader = new VShaderStd();
+
+	shader->DiffuseColour = getRGB(fn, MString("c"));
+	shader->DiffuseRoughness = new Float32Const(0);
+	shader->DiffuseStrength = new Float32Const(0.5);
+
+	shader->Spec1Strength = new Float32Const(0.5);
+	shader->Spec1Roughness = new Float32Const(0.7);
+	shader->Spec1Colour = getRGB(fn, MString("s"));
+
+	bool isBlack = true;
+	shader->TransColour = getRGB(fn, MString("it"), &isBlack);
+
+	if (!isBlack) {
+		MPlug plug = fn.findPlug("rfi");
+
+		plug.getValue(shader->IOR);
+
+		shader->Transmissive = TRUE;
+		shader->TransStrength = new Float32Const(0.8);
+	}
+
+	shader->Name = nodeFn.name();
+
+	return shader;
+
+}
+
+VShaderStd* VermeerStdShader::createShaderBlinn(MObject& obj) {
+	MFnDependencyNode nodeFn(obj);
+
+	MFnBlinnShader fn(obj);
+
+	// extract all the phong parameters:
+	//MColor glowColor = phong.incandescence();
+	//MColor diffuseColor = phong.color() * phong.diffuseCoeff();
+	//MColor specularColor = phong.specularColor();
+	//double cosinePower = phong.cosPower();
+	//MColor transColor = phong.transparency();
+
+	VShaderStd* shader = new VShaderStd();
+
+	shader->DiffuseColour = getRGB(fn, MString("c"));
+	shader->DiffuseRoughness = new Float32Const(0);
+	shader->DiffuseStrength = new Float32Const(0.5);
+
+	shader->Spec1Strength = new Float32Const(0.5);
+	shader->Spec1Roughness = new Float32Const(0.7);
+	shader->Spec1Colour = getRGB(fn, MString("s"));
+
+	bool isBlack = true;
+	shader->TransColour = getRGB(fn, MString("it"), &isBlack);
+
+	if (!isBlack) {
+		MPlug plug = fn.findPlug("rfi");
+
+		plug.getValue(shader->IOR);
+
+		shader->Transmissive = TRUE;
+		shader->TransStrength = new Float32Const(0.8);
+	}
+
+	shader->Name = nodeFn.name();
+
+	return shader;
+
+}
+
+VShaderStd* VermeerStdShader::createShaderLambert(MObject& obj) {
+	MFnLambertShader fn(obj);
+
+	MColor diffColor = fn.color() * fn.diffuseCoeff();
+
+	MPlug plug;
+
+	MFnDependencyNode nodeFn(obj);
+
+	VShaderStd* shader = new VShaderStd();
+
+	shader->DiffuseColour = new RGBConst(diffColor);
+	shader->DiffuseRoughness = new Float32Const(0);
+	shader->DiffuseStrength = new Float32Const(1);
+
+	shader->Spec1Strength = new Float32Const(0);
+
+
+#if 0
+	shader->DiffuseColour = getRGB(nodeFn, MString("dc"));
+	shader->DiffuseRoughness = getValue(nodeFn, MString("dr"));
+	shader->DiffuseStrength = getValue(nodeFn, MString("ds"));
+
+	shader->Spec1Colour = getRGB(nodeFn, MString("s1c"));
+	shader->Spec1Roughness = getValue(nodeFn, MString("s1r"));
+	shader->Spec1Strength = getValue(nodeFn, MString("s1s"));
+
+	shader->TransColour = getRGB(nodeFn, MString("tc"));
+	shader->TransStrength = getValue(nodeFn, MString("ts"));
+
+	plug = nodeFn.findPlug("ior");
+
+	plug.getValue(shader->IOR);
+
+	plug = nodeFn.findPlug("priority");
+
+	plug.getValue(shader->Priority);
+
+	plug = nodeFn.findPlug("transmissive");
+
+	plug.getValue(shader->Transmissive);
+#endif
 
 	shader->Name = nodeFn.name();
 

@@ -15,7 +15,7 @@ class VCamera;
 class VNFExporter : public MPxFileTranslator {
 
 public:
-	VNFExporter():nLights(0) {}
+	VNFExporter():nLights(0),nMissingShaders(0) {}
 	virtual					~VNFExporter(){}
 
 	virtual MStatus			writer(const MFileObject& file,
@@ -38,9 +38,10 @@ public:
 	void exportPointLight(ostream& ofile, MObject& obj);
 
 	bool hasShader(const MString& name) const;
-	void createShader(MObject& obj);
+	bool createShader(MObject& obj);
 
 
+	int nMissingShaders;
 	std::vector<VShaderStd*> shaders;
 	std::vector<VCamera*> cameras;
 	VGlobals* globals;
@@ -48,5 +49,6 @@ public:
 };
 
 MStatus initPointLightExtensions(MObject& obj);
+MStatus initMeshExtensions(MObject& obj);
 
 #endif /*__VNFEXPORTER_H*/

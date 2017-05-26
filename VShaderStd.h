@@ -8,6 +8,8 @@
 #include <maya/MFStream.h>
 #include <maya/MString.h>
 
+#include <maya/MColor.h>
+
 class Uniform {
 public:
 	virtual void write(ostream& os) const = 0;
@@ -38,6 +40,13 @@ public:
 
 	}
 
+	RGBConst(const MColor& col) {
+		C[0] = col[0];
+		C[1] = col[1];
+		C[2] = col[2];
+
+	}
+
 	void write(ostream& os) const {
 		os << "rgb " << C[0] << " " << C[1] << " " << C[2];
 	}
@@ -50,6 +59,10 @@ public:
 
 	Float32Const() {
 		C = 0;
+	}
+
+	Float32Const(float c) {
+		C = c;
 	}
 
 	void write(ostream& os) const {

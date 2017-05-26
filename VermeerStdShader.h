@@ -19,7 +19,14 @@ public:
 	virtual MStatus	compute(const MPlug&, MDataBlock&);
 	static  MStatus	initialize();
 
+	static VShaderStd* createShaderDefault(const MString& name);
+
 	static VShaderStd* createShaderStd(MObject& obj);
+
+	static VShaderStd* createShaderLambert(MObject& obj);
+	static VShaderStd* createShaderPhong(MObject& obj);
+	static VShaderStd* createShaderPhongE(MObject& obj);
+	static VShaderStd* createShaderBlinn(MObject& obj);
 
 	// postConstructor:
 	// The postConstructor method allows us to call MPxNode member
