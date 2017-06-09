@@ -270,6 +270,64 @@ MStatus VermeerStdShader::initialize()
 	CHECK_MSTATUS(eAttr.setStorable(true));
 	CHECK_MSTATUS(eAttr.setKeyable(false));
 
+	aSpec1FresnelEdgeR = nAttr.create("spec1FresnelEdgeR", "s1fer", MFnNumericData::kFloat, 0,
+		&status);
+	CHECK_MSTATUS(status);
+	CHECK_MSTATUS(nAttr.setKeyable(true));
+	CHECK_MSTATUS(nAttr.setStorable(true));
+	CHECK_MSTATUS(nAttr.setDefault(0.8f));
+
+	aSpec1FresnelEdgeG = nAttr.create("spec1FresnelEdgeG", "s1feg", MFnNumericData::kFloat, 0,
+		&status);
+	CHECK_MSTATUS(status);
+	CHECK_MSTATUS(nAttr.setKeyable(true));
+	CHECK_MSTATUS(nAttr.setStorable(true));
+	CHECK_MSTATUS(nAttr.setDefault(0.8f));
+
+	aSpec1FresnelEdgeB = nAttr.create("spec1FresnelEdgeB", "s1feb", MFnNumericData::kFloat, 0,
+		&status);
+	CHECK_MSTATUS(status);
+	CHECK_MSTATUS(nAttr.setKeyable(true));
+	CHECK_MSTATUS(nAttr.setStorable(true));
+	CHECK_MSTATUS(nAttr.setDefault(0.8f));
+
+	aSpec1FresnelEdge = nAttr.create("spec1FresnelEdge", "s1fe", aSpec1FresnelEdgeR, aSpec1FresnelEdgeG, aSpec1FresnelEdgeB,
+		&status);
+	CHECK_MSTATUS(status);
+	CHECK_MSTATUS(nAttr.setKeyable(true));
+	CHECK_MSTATUS(nAttr.setStorable(true));
+	CHECK_MSTATUS(nAttr.setDefault(0.8f, 0.8f, 0.8f));
+	CHECK_MSTATUS(nAttr.setUsedAsColor(true));
+
+	aSpec1FresnelReflR = nAttr.create("spec1FresnelReflR", "s1frr", MFnNumericData::kFloat, 0,
+		&status);
+	CHECK_MSTATUS(status);
+	CHECK_MSTATUS(nAttr.setKeyable(true));
+	CHECK_MSTATUS(nAttr.setStorable(true));
+	CHECK_MSTATUS(nAttr.setDefault(0.8f));
+
+	aSpec1FresnelReflG = nAttr.create("spec1FresnelReflG", "s1frg", MFnNumericData::kFloat, 0,
+		&status);
+	CHECK_MSTATUS(status);
+	CHECK_MSTATUS(nAttr.setKeyable(true));
+	CHECK_MSTATUS(nAttr.setStorable(true));
+	CHECK_MSTATUS(nAttr.setDefault(0.8f));
+
+	aSpec1FresnelReflB = nAttr.create("spec1FresnelReflB", "s1frb", MFnNumericData::kFloat, 0,
+		&status);
+	CHECK_MSTATUS(status);
+	CHECK_MSTATUS(nAttr.setKeyable(true));
+	CHECK_MSTATUS(nAttr.setStorable(true));
+	CHECK_MSTATUS(nAttr.setDefault(0.8f));
+
+	aSpec1FresnelRefl = nAttr.create("spec1FresnelRefl", "s1fr", aSpec1FresnelReflR, aSpec1FresnelReflG, aSpec1FresnelReflB,
+		&status);
+	CHECK_MSTATUS(status);
+	CHECK_MSTATUS(nAttr.setKeyable(true));
+	CHECK_MSTATUS(nAttr.setStorable(true));
+	CHECK_MSTATUS(nAttr.setDefault(0.8f, 0.8f, 0.8f));
+	CHECK_MSTATUS(nAttr.setUsedAsColor(true));
+
 	aTransmissive = nAttr.create("transmissive", "t", MFnNumericData::kBoolean, 0,
 		&status);
 	CHECK_MSTATUS(status);
@@ -361,6 +419,8 @@ MStatus VermeerStdShader::initialize()
 	CHECK_MSTATUS(addAttribute(aSpec1Color));
 	CHECK_MSTATUS(addAttribute(aSpec1Roughness));
 	CHECK_MSTATUS(addAttribute(aSpec1FresnelModel));
+	CHECK_MSTATUS(addAttribute(aSpec1FresnelEdge));
+	CHECK_MSTATUS(addAttribute(aSpec1FresnelRefl));
 	CHECK_MSTATUS(addAttribute(aTransmissive));
 	CHECK_MSTATUS(addAttribute(aTransStrength));
 	CHECK_MSTATUS(addAttribute(aTransColor));
@@ -502,6 +562,10 @@ VShaderStd* VermeerStdShader::createShaderStd(MObject& obj) {
 	shader->Spec1Colour = getRGB(nodeFn, MString("s1c"));
 	shader->Spec1Roughness = getValue(nodeFn, MString("s1r"));
 	shader->Spec1Strength = getValue(nodeFn, MString("s1s"));
+
+	plug = nodeFn.findPlug("spec1fresmodel");
+
+	plug.getValue(shader->Spec1FresnelModel);
 
 	shader->TransColour = getRGB(nodeFn, MString("tc"));
 	shader->TransStrength = getValue(nodeFn, MString("ts"));

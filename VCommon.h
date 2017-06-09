@@ -23,7 +23,7 @@ class VAiryFilter {
 public:
 	void write(ostream& os);
 
-	VAiryFilter() : Name("filter1"), Res(64), Width(4) {}
+	VAiryFilter() : Name("filter1"), Res(64), Width(6) {}
 
 	MString Name;
 	int Res;
@@ -35,6 +35,15 @@ public:
 	void write(ostream& os);
 
 	VOutputHDR(MString fname);
+
+	MString Filename;
+};
+
+class VOutputPNG {
+public:
+	void write(ostream& os);
+
+	VOutputPNG(MString fname);
 
 	MString Filename;
 };

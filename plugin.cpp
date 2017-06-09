@@ -54,6 +54,8 @@ MStatus initializePlugin(MObject obj) {
 
 	CHECK_MSTATUS(MGlobal::executeCommand(command));
 
+	CHECK_MSTATUS(MGlobal::executeCommand("m2v_renderer",true));
+
 	CHECK_MSTATUS(initPointLightExtensions(obj));
 
 	CHECK_MSTATUS(initMeshExtensions(obj));

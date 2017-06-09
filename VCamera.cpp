@@ -35,7 +35,7 @@ MString getActiveViewCamera() {
 
 	}
 
-	return "<default>";
+	return "";
 }
 
 VCamera* createCamera(MObject& obj) {

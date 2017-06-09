@@ -39,6 +39,8 @@ VOutputHDR::VOutputHDR(MString fname) : Filename(fname + ".hdr") {
 	if (rsData.name != "") {
 		Filename = MString(rsData.name + ".hdr");
 	}
+
+	//rsData.
 }
 
 void VOutputHDR::write(ostream& os) {
@@ -48,3 +50,23 @@ void VOutputHDR::write(ostream& os) {
 
 }
 
+VOutputPNG::VOutputPNG(MString fname) : Filename(fname + ".png") {
+	
+	MCommonRenderSettingsData rsData;
+	MRenderUtil::getCommonRenderSettings(rsData);
+
+	if (rsData.name != "") {
+		Filename = MString(rsData.name + ".png");
+	}
+
+	//rsData.
+}
+
+void VOutputPNG::write(ostream& os) {
+	os << "OutputPNG {\n";
+	os << "\tFilename \"" << Filename << "\"\n";
+	os << "\tName \"" << "output1" << "\"\n";
+	os << "\tTonemap \"" << "Rienhard" << "\"\n";
+	os << "}\n\n";
+
+}

@@ -69,19 +69,22 @@ MStatus	VNFExporter::writer(const MFileObject& file,
 
 		globals->Camera = getActiveViewCamera();
 
-		globals->write(newFile);
 
 		VAiryFilter* filter = new VAiryFilter();
 		VOutputHDR* outputHDR = new VOutputHDR(filename);
+		VOutputPNG* outputPNG = new VOutputPNG(filename);
 
 		filter->write(newFile);
 		outputHDR->write(newFile);
+		outputPNG->write(newFile);
 
 		delete filter;
 		delete outputHDR;
+		delete outputPNG;
 
 		exportAll(newFile);
 
+		globals->write(newFile);
 
 	}
 
@@ -181,6 +184,10 @@ void VNFExporter::exportAll(ostream& ofile) {
 
 				if (cam != 0) {
 					cameras.push_back(cam);
+
+					if (globals->Camera == "") {
+						globals->Camera = cam->Name;
+					}
 				}
 			}
 			else if (path.apiType() == MFn::kMesh) {
@@ -508,7 +515,9 @@ void VNFExporter::exportMesh(ostream& ofile, MObject& obj){
 	MDagPath::getAPathTo(obj, pathToMesh);
 
 	matrix = pathToMesh.inclusiveMatrix();
-
+	if (pathToMesh.isInstanced()) {
+		ofile << "# Instanced: " << pathToMesh.instanceNumber() << "\n";
+	}
 	ofile << "\tTransform ";
 	writeTransform(matrix,ofile);
 
