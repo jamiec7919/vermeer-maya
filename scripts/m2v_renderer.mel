@@ -1,0 +1,82 @@
+global proc m2v_Render(int $width, int $height, int $doShadows, int $doGlowPass, string $camera, string $option){
+//	sunflowCheckGlobals;
+	//sunflowExportCmd($width, $height, $doShadows, $doGlowPass, $camera, $option);
+  	$path = string(`workspace -q -rd`);
+	$filename = basenameEx (`file -q -sn`) +".vnf";
+	$fullpath = $path + "/" + $filename;
+ 	print("test render "+$option+" "+$camera+" "+$fullpath+"\n");
+ 	file -force -options "-option1 1 -option2 1 " -type "VNF File" -pr -ea $fullpath;
+    system("d:\\projects\\go\\bin\\vermeer -maxiter=32 " + $fullpath);
+}
+
+global proc m2v_IPRRender(int $width, int $height, int $doShadows, int $doGlowPass, string $camera, string $option){
+	print($width+"\n");
+	print($height+"\n");
+	print($doShadows+"\n");
+	print($doGlowPass+"\n");
+	print($camera+"\n");
+	print($option+"\n");
+	//sunflowExportCmd($width, $height, $doShadows, $doGlowPass, $camera, $option);
+}
+
+global proc m2v_render() {
+	
+}
+
+global proc m2v_initialize() {
+ renderer
+		-rendererUIName					"Vermeer"
+		-renderProcedure				"m2v_Render"
+		-commandRenderProcedure			"m2v_Render"
+		-batchRenderProcedure			"m2v_Render"
+		-showRenderLogProcedure			""
+		-batchRenderOptionsProcedure	""
+		-cancelBatchRenderProcedure		"m2v_CancelBatch"
+		-showBatchRenderProcedure		""
+		-showBatchRenderLogProcedure	""
+		-iprRenderProcedure				""
+		-startIprRenderProcedure		""
+		-stopIprRenderProcedure			""
+		-changeIprRegionProcedure		""
+		-iprOptionsMenuLabel			""
+		-iprOptionsSubMenuProcedure		""
+		-renderDiagnosticsProcedure		""
+		-renderRegionProcedure			""
+		-textureBakingProcedure			""
+		-polyPrelightProcedure			""
+		-renderingEditorsSubMenuProcedure	""
+//		-addGlobalsNode                     	"m2v_RenderGlobals"
+//		-logoImageName                      	"m2v_Render.xpm"
+//		-logoCallbackProcedure              	"m2v_LogoCallback"
+       vermeer;
+
+	//
+	//The first argument of the "-addGlobalsTab" flag is used in creating layout names
+	//and should not be localized.
+	//
+	
+	renderer
+		-edit
+		-addGlobalsTab 	"Common"
+				"createMayaSoftwareCommonGlobalsTab" 
+				"updateMayaSoftwareCommonGlobalsTab" 
+	vermeer;
+	renderer
+        -edit
+        -addGlobalsTab  "Vermeer"
+                        "createVermeerGlobalsTab"
+                        "updateVermeerGlobalsTab"
+	vermeer;	
+}
+
+global proc updateVermeerGlobalsTab()
+{
+}
+
+// createVermeerGlobalsTab
+//
+// Creates the Sunflow tab of the Sunflow Render Globals
+//
+global proc createVermeerGlobalsTab()
+{
+}
