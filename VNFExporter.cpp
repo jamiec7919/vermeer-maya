@@ -535,6 +535,19 @@ void VNFExporter::exportMesh(ostream& ofile, MObject& obj){
 		ofile << "\tRayBias " << rayBias << "\n";
 	}
 
+    bool opaque = true;
+
+	plug = fn.findPlug("opaque", &status);
+
+	if (MStatus::kSuccess == status)
+	{
+		plug.getValue(opaque);
+	}
+
+	if(opaque != true) {
+		ofile << "\tOpaque " << 0 << "\n";
+	}
+
 	ofile << "}\n\n";
 
 }
@@ -713,6 +726,18 @@ MStatus initMeshExtensions(MObject& obj) {
 	//MFnTypedAttribute fnAttr;
 	//MObject attr = fnAttr.create(L, S, MyMPx::id); // or: MObject attr = fnAttr.create(L, S, MyMPx::id, MObject::kNullObj, &status);
 	MNodeClass mnDagNodeClass("mesh");
+	status = mnDagNodeClass.addExtensionAttribute(attr);
+
+	attr = nAttr.create("opaque", "op",
+		MFnNumericData::kBoolean, 0, &status);
+	CHECK_MSTATUS(status);
+	CHECK_MSTATUS(nAttr.setKeyable(false));
+	CHECK_MSTATUS(nAttr.setStorable(true));
+	CHECK_MSTATUS(nAttr.setDefault(true));
+
+	//MFnTypedAttribute fnAttr;
+	//MObject attr = fnAttr.create(L, S, MyMPx::id); // or: MObject attr = fnAttr.create(L, S, MyMPx::id, MObject::kNullObj, &status);
+	//MNodeClass mnDagNodeClass("mesh");
 	status = mnDagNodeClass.addExtensionAttribute(attr);
 
 	return status;
