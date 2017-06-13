@@ -45,6 +45,13 @@ void VShaderStd::write(ostream& os){
 		os << "\tSpec1Roughness " << Spec1Roughness << "\n";
 	}
 
+	os << "\tSpec1FresnelModel \"" << Spec1FresnelModel << "\"\n";
+
+	if (Spec1FresnelModel == MString("Metal")) {
+		os << "\tSpec1FresnelEdge " << Spec1FresnelEdge << "\n";
+		os << "\tSpec1FresnelRefl " << Spec1FresnelRefl << "\n";
+	}
+
 	if (EmissionColour != 0) {
 		os << "\tEmissionColour " << EmissionColour << "\n";
 		os << "\tEmissionStrength " << EmissionStrength << "\n";
@@ -60,6 +67,10 @@ void VShaderStd::write(ostream& os){
 			os << "\tTransStrength " << TransStrength << "\n";
 		}
 
+		if(Thin) {
+			os << "\tThin " << 1 << "\n";
+
+		}
 	}
 
 	os << "}\n\n";

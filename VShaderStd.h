@@ -93,14 +93,15 @@ public:
 	Uniform* Spec1Colour;
 	Uniform* Spec1Roughness;
 	MString Spec1FresnelModel;
-	float Spec1FresnelEdge[3];
-	float Spec1FresnelRefl[3];
+	Uniform* Spec1FresnelEdge;
+	Uniform* Spec1FresnelRefl;
 
 	Uniform* EmissionStrength;
 	Uniform* EmissionColour;
 
 	Uniform* TransStrength;
 	BOOL Transmissive;
+	BOOL Thin;
 	Uniform* TransColour;
 	int Priority;
 	float IOR;

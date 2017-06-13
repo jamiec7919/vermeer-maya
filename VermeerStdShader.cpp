@@ -42,6 +42,7 @@ MObject  VermeerStdShader::aSpec1FresnelEdgeB;
 MObject  VermeerStdShader::aSpec1FresnelEdge;
 
 MObject  VermeerStdShader::aTransmissive;
+MObject  VermeerStdShader::aThin;
 MObject  VermeerStdShader::aTransStrength;
 MObject  VermeerStdShader::aTransColorR;
 MObject  VermeerStdShader::aTransColorG;
@@ -263,7 +264,7 @@ MStatus VermeerStdShader::initialize()
 	CHECK_MSTATUS(nAttr.setStorable(true));
 	CHECK_MSTATUS(nAttr.setDefault(0.5f));
 
-	aSpec1FresnelModel = eAttr.create("spec1FresnelModel", "spec1fresmodel", 0, &status);
+	aSpec1FresnelModel = eAttr.create("spec1FresnelModel", "s1fm", 0, &status);
 	CHECK_MSTATUS(status);
 	CHECK_MSTATUS(eAttr.addField("Dielectric", 0));
 	CHECK_MSTATUS(eAttr.addField("Metal", 1));
@@ -332,6 +333,13 @@ MStatus VermeerStdShader::initialize()
 		&status);
 	CHECK_MSTATUS(status);
 	CHECK_MSTATUS(nAttr.setKeyable(true));
+	CHECK_MSTATUS(nAttr.setStorable(true));
+	CHECK_MSTATUS(nAttr.setDefault(false));
+
+	aThin = nAttr.create("thin", "th", MFnNumericData::kBoolean, 0,
+		&status);
+	CHECK_MSTATUS(status);
+	CHECK_MSTATUS(nAttr.setKeyable(false));
 	CHECK_MSTATUS(nAttr.setStorable(true));
 	CHECK_MSTATUS(nAttr.setDefault(false));
 
@@ -422,6 +430,7 @@ MStatus VermeerStdShader::initialize()
 	CHECK_MSTATUS(addAttribute(aSpec1FresnelEdge));
 	CHECK_MSTATUS(addAttribute(aSpec1FresnelRefl));
 	CHECK_MSTATUS(addAttribute(aTransmissive));
+	CHECK_MSTATUS(addAttribute(aThin));
 	CHECK_MSTATUS(addAttribute(aTransStrength));
 	CHECK_MSTATUS(addAttribute(aTransColor));
 	CHECK_MSTATUS(addAttribute(aIOR));
@@ -563,9 +572,21 @@ VShaderStd* VermeerStdShader::createShaderStd(MObject& obj) {
 	shader->Spec1Roughness = getValue(nodeFn, MString("s1r"));
 	shader->Spec1Strength = getValue(nodeFn, MString("s1s"));
 
-	plug = nodeFn.findPlug("spec1fresmodel");
+	plug = nodeFn.findPlug("s1fm");
 
-	plug.getValue(shader->Spec1FresnelModel);
+	int s1fm;
+	plug.getValue(s1fm);
+
+	switch (s1fm) {
+	case 1:
+		shader->Spec1FresnelModel = MString("Metal");
+		break;
+	default:
+		shader->Spec1FresnelModel = MString("Dielectric");
+	}
+
+	shader->Spec1FresnelEdge = getRGB(nodeFn, MString("s1fe"));
+	shader->Spec1FresnelRefl = getRGB(nodeFn, MString("s1fr"));
 
 	shader->TransColour = getRGB(nodeFn, MString("tc"));
 	shader->TransStrength = getValue(nodeFn, MString("ts"));
@@ -581,6 +602,10 @@ VShaderStd* VermeerStdShader::createShaderStd(MObject& obj) {
 	plug = nodeFn.findPlug("transmissive");
 
 	plug.getValue(shader->Transmissive);
+
+	plug = nodeFn.findPlug("thin");
+
+	plug.getValue(shader->Thin);
 
 	shader->Name = nodeFn.name();
 

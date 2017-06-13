@@ -103,6 +103,9 @@ protected:
 	// Transmission
 	static MObject  aTransmissive;
 
+	// Thin (glass)
+	static MObject  aThin;
+
 	// Red component of transmission color
 	static MObject  aTransColorR;
 
